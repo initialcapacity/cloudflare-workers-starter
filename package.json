@@ -1,0 +1,27 @@
+{
+    "name": "workers-starter",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "wrangler dev",
+        "start": "wrangler dev",
+        "typecheck": "tsc",
+        "test": "npm run typecheck && vitest run",
+        "worker:start": "wrangler dev --config wrangler-worker.toml --test-scheduled",
+        "worker:trigger": "curl \"http://localhost:8789/__scheduled?cron=*/10+*+*+*+*\"",
+        "auth:start": "wrangler dev --config wrangler-auth.toml"
+    },
+    "devDependencies": {
+        "@cloudflare/workers-types": "^4.20240129.0",
+        "typescript": "^5.0.4",
+        "vitest": "^1.2.2",
+        "vitest-environment-miniflare": "^2.14.2",
+        "wrangler": "^3.0.0"
+    },
+    "dependencies": {
+        "@worker-tools/shed": "^0.1.0-pre.10"
+    },
+    "engines": {
+        "node": "21.6.1"
+    }
+}

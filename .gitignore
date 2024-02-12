@@ -1,0 +1,7 @@
+.idea
+.wrangler
+node_modules
+dist-app
+dist-auth
+dist-worker
+.dev.vars

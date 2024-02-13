@@ -34,7 +34,7 @@ const layout = (content: HTML): HTML => html`
 
 const title: HTML = html`
     <ul>
-        <li class="heading">
+        <li>
             <svg class="logo">
                 <use xlink:href="/static/images/icons.svg#logo"></use>
             </svg>

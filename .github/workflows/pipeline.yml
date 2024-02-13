@@ -19,11 +19,8 @@ jobs:
           cache: npm
       - name: 'Install dependencies'
         run: npm ci
-      - name: 'Migrate local database'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          wranglerVersion: "3.28.2"
-          command: d1 migrations apply starter-db --local
+      - name: 'Migrate'
+        run: npm run migrate
       - name: 'Run tests'
         run: npm test
       - name: 'Build app'

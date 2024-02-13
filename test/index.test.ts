@@ -18,7 +18,7 @@ describe('Starter app', () => {
 
         expect(response.status).toEqual(200)
         const text = await response.text();
-        expect(text).toContain('Workers Starter');
+        expect(text).toContain('Welcome');
         expect(text).toContain('log in');
     });
 
@@ -32,7 +32,7 @@ describe('Starter app', () => {
 
         expect(response.status).toEqual(200)
         const text = await response.text();
-        expect(text).toContain('Workers Starter');
+        expect(text).toContain('Dashboard');
         expect(text).toContain('Welcome, test@example.com!');
     });
 

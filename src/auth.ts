@@ -79,6 +79,7 @@ export default {
                 return found('/');
             })
             .get('/', req => env.APP.fetch(req))
+            .get('/static/*', req => env.APP.fetch(req))
             .all('/*', (_, { session }) => {
                 if (session.email === null) {
                     return found('/login');

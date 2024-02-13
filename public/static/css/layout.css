@@ -85,7 +85,7 @@ footer {
     background-color: var(--inverted-background-color);
     background-image: var(--inverted-ic-logo);
     background-repeat: no-repeat;
-    background-position: right var(--body-padding) bottom var(--body-padding);
+    background-position: right var(--body-padding) center;
 }
 
 footer a, footer a:visited {

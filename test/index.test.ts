@@ -13,18 +13,31 @@ describe('Starter app', () => {
         await worker.stop();
     });
 
-    it('loads', async () => {
-        const response = await worker.fetch('/', {
-            headers: {'starter-proxied': 'true'}
+    it('loads the index', async () => {
+        const response = await worker.fetch('/');
+
+        expect(response.status).toEqual(200)
+        const text = await response.text();
+        expect(text).toContain('Workers Starter');
+        expect(text).toContain('log in');
+    });
+
+    it('loads the dashboard', async () => {
+        const response = await worker.fetch('/dashboard', {
+            headers: {
+                'starter-proxied': 'true',
+                'starter-user': 'test@example.com',
+            }
         });
 
         expect(response.status).toEqual(200)
         const text = await response.text();
         expect(text).toContain('Workers Starter');
+        expect(text).toContain('Welcome, test@example.com!');
     });
 
-    it('blocks requests without a proxied header', async () => {
-        const response = await worker.fetch('/');
+    it('blocks requests to the dashboard without a proxied header', async () => {
+        const response = await worker.fetch('/dashboard');
 
         expect(response.status).toEqual(403)
         const text = await response.text();

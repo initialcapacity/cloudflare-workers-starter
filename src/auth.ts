@@ -78,6 +78,7 @@ export default {
                 session.email = email;
                 return found('/');
             })
+            .get('/', req => env.APP.fetch(req))
             .all('/*', (_, { session }) => {
                 if (session.email === null) {
                     return found('/login');

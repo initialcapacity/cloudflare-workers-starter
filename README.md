@@ -16,6 +16,11 @@ https://starterapp.work
 
 1.  Edit the `.dev.vars` file to match your configuration.
 
+1.  Migrate your local database.
+    ```shell
+    wrangler d1 migrations apply starter-db --local
+    ```
+
 1.  Run the scheduled worker.
     ```shell
     npm run worker:start
@@ -35,3 +40,11 @@ https://starterapp.work
     ```shell
     npm start
     ```
+
+## Migrations
+
+Run a migration with
+
+```shell
+wrangler d1 migrations create $MIGRATION_NAME
+```

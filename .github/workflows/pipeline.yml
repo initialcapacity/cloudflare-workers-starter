@@ -40,7 +40,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy --config wrangler-worker.toml --outdir dist-worker --dry-run
       - name: 'Zip app'
-        run: zip -r app.zip dist-app public wrangler.toml
+        run: zip -r app.zip dist-app public migrations wrangler.toml
       - name: 'Zip auth'
         run: zip -r auth.zip dist-auth wrangler-auth.toml
       - name: 'Zip worker'
@@ -60,9 +60,26 @@ jobs:
         with:
           name: worker
           path: worker.zip
+  migrate:
+    name: 'Migrate database'
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Download app'
+        uses: actions/download-artifact@v3
+        with:
+          name: app
+      - name: 'Unzip app artifact'
+        run: unzip app.zip
+      - name: 'Migrate databse on Cloudflare'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          wranglerVersion: "3.26.0"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: d1 migrations apply starter-db
   deploy-app:
     name: 'Deploy app'
-    needs: [test]
+    needs: [migrate]
     runs-on: ubuntu-latest
     steps:
       - name: 'Download app'
@@ -79,7 +96,7 @@ jobs:
           command: deploy dist-app/index.js --no-bundle
   deploy-auth:
     name: 'Deploy auth'
-    needs: [test]
+    needs: [migrate]
     runs-on: ubuntu-latest
     steps:
       - name: 'Download auth'
@@ -96,7 +113,7 @@ jobs:
           command: deploy --config wrangler-auth.toml dist-auth/auth.js --no-bundle
   deploy-worker:
     name: 'Deploy worker'
-    needs: [test]
+    needs: [migrate]
     runs-on: ubuntu-latest
     steps:
       - name: 'Download worker'

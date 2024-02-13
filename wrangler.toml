@@ -6,3 +6,8 @@ workers_dev = false
 
 [site]
 bucket = "./public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "starter-db"
+database_id = "311b464e-ef41-4aed-98b3-75bf4f9f3efe"

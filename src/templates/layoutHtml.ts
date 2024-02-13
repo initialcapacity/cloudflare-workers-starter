@@ -54,7 +54,12 @@ export const unauthenticatedLayout = (content: HTML): HTML => layout(html`
     </main>
 `)
 
-export const authenticatedLayout = (email: string, content: HTML): HTML => layout(html`
+type UserContext = {
+    email: string
+    accountName: string,
+}
+
+export const authenticatedLayout = (user: UserContext, content: HTML): HTML => layout(html`
     <header>
         ${title}
         <ul>
@@ -64,12 +69,11 @@ export const authenticatedLayout = (email: string, content: HTML): HTML => layou
                         <use xlink:href="/static/images/icons.svg#account"></use>
                     </svg>
 
-                   ${email}
+                   ${user.email}
                 </a>
 
                 <ul class="menu" aria-label="submenu">
-                    <li><a href="#">Another account</a></li>
-                    <li><a href="#">Some other account</a></li>
+                    <li><a href="#">${user.accountName}</a></li>
                 </ul>
             </li>
             <li>

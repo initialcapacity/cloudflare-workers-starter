@@ -19,26 +19,29 @@ jobs:
           cache: npm
       - name: 'Install dependencies'
         run: npm ci
-      - name: 'Migrate'
-        run: npm run migrate
+      - name: 'Migrate local database'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          wranglerVersion: "3.28.2"
+          command: d1 migrations apply starter-db --local
       - name: 'Run tests'
         run: npm test
       - name: 'Build app'
         uses: cloudflare/wrangler-action@v3
         with:
-          wranglerVersion: "3.26.0"
+          wranglerVersion: "3.28.2"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy --outdir dist-app --dry-run
       - name: 'Build auth'
         uses: cloudflare/wrangler-action@v3
         with:
-          wranglerVersion: "3.26.0"
+          wranglerVersion: "3.28.2"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy --config wrangler-auth.toml --outdir dist-auth --dry-run
       - name: 'Build worker'
         uses: cloudflare/wrangler-action@v3
         with:
-          wranglerVersion: "3.26.0"
+          wranglerVersion: "3.28.2"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy --config wrangler-worker.toml --outdir dist-worker --dry-run
       - name: 'Zip app'
@@ -73,10 +76,10 @@ jobs:
           name: app
       - name: 'Unzip app artifact'
         run: unzip app.zip
-      - name: 'Migrate databse on Cloudflare'
+      - name: 'Migrate database on Cloudflare'
         uses: cloudflare/wrangler-action@v3
         with:
-          wranglerVersion: "3.26.0"
+          wranglerVersion: "3.28.2"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: d1 migrations apply starter-db
   deploy-app:
@@ -93,7 +96,7 @@ jobs:
       - name: 'Deploy app to Cloudflare'
         uses: cloudflare/wrangler-action@v3
         with:
-          wranglerVersion: "3.26.0"
+          wranglerVersion: "3.28.2"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy dist-app/index.js --no-bundle
   deploy-auth:
@@ -110,7 +113,7 @@ jobs:
       - name: 'Deploy auth to Cloudflare'
         uses: cloudflare/wrangler-action@v3
         with:
-          wranglerVersion: "3.26.0"
+          wranglerVersion: "3.28.2"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy --config wrangler-auth.toml dist-auth/auth.js --no-bundle
   deploy-worker:
@@ -127,6 +130,6 @@ jobs:
       - name: 'Deploy worker to Cloudflare'
         uses: cloudflare/wrangler-action@v3
         with:
-          wranglerVersion: "3.26.0"
+          wranglerVersion: "3.28.2"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy --config wrangler-worker.toml dist-worker/worker.js --no-bundle

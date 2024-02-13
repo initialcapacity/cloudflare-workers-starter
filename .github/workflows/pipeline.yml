@@ -40,7 +40,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy --config wrangler-worker.toml --outdir dist-worker --dry-run
       - name: 'Zip app'
-        run: zip -r app.zip dist-app wrangler.toml
+        run: zip -r app.zip dist-app public wrangler.toml
       - name: 'Zip auth'
         run: zip -r auth.zip dist-auth wrangler-auth.toml
       - name: 'Zip worker'

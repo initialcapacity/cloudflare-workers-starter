@@ -31,7 +31,6 @@ export default {
 
         }
 
-
         return new WorkerRouter(basics())
             .get('/', () => new HTMLResponse(layoutHtml(indexHtml)))
             .get('/dashboard', authenticated((_, {email}) => new HTMLResponse(layoutHtml(dashboardHtml(email))))).fetch(request);

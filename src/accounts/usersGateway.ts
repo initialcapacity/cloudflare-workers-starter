@@ -1,5 +1,5 @@
 type UserRecord = {
-    id: string
+    id: number
     email: string
 }
 
@@ -14,7 +14,7 @@ export const usersGateway = (db: D1Database): UsersGateway => ({
         if (record === null) return record
 
         return {
-            id: record["id"] as string,
+            id: record["id"] as number,
             email: record["email"] as string,
         }
     },
@@ -25,7 +25,7 @@ export const usersGateway = (db: D1Database): UsersGateway => ({
         }
 
         return {
-            id: record["id"] as string,
+            id: record["id"] as number,
             email: record["email"] as string,
         }
     }

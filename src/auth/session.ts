@@ -1,6 +1,6 @@
 import {UserAccount} from "../accounts/accountsService";
 
-type UserSession = { userId: string, email: string, accountId: string, accountName: string };
+type UserSession = { userId: number, email: string, accountId: number, accountName: string };
 type EmptySession = { userId: null, email: null, accountId: null, accountName: null };
 
 export type Session = UserSession | EmptySession

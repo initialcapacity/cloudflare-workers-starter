@@ -3,9 +3,9 @@ import {UsersGateway} from "./usersGateway";
 import {AccountRecord, AccountsGateway} from "./accountsGateway";
 
 export type UserAccount = {
-    id: string
+    id: number
     email: string
-    accountId: string
+    accountId: number
     accountName: string
 }
 
@@ -18,7 +18,7 @@ export const accountsService = (
     usersGateway: UsersGateway,
     membershipsGateway: MembershipsGateway,
 ): AccountsService => {
-    const createAccountFor = async (userId: string, email: string): Promise<AccountRecord> => {
+    const createAccountFor = async (userId: number, email: string): Promise<AccountRecord> => {
         const account = await accountsGateway.create(`${email} account`)
         await membershipsGateway.create(userId, account.id)
         return account

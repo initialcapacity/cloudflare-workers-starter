@@ -1,5 +1,3 @@
--- Migration number: 0000 	 2024-02-13T03:45:01.307Z
-
 create table users
 (
     id         integer primary key,

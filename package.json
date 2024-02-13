@@ -18,7 +18,7 @@
         "typescript": "^5.0.4",
         "vitest": "^1.2.2",
         "vitest-environment-miniflare": "^2.14.2",
-        "wrangler": "3.28.1"
+        "wrangler": "3.28.2"
     },
     "dependencies": {
         "@cloudflare/kv-asset-handler": "^0.3.1",

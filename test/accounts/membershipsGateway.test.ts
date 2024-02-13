@@ -1,14 +1,11 @@
 import {membershipsGateway} from "../../src/accounts/membershipsGateway";
-import {clear, createDb, migrate} from "../support/databaseSupport";
+import {clear, createDb} from "../support/databaseSupport";
 import {beforeEach} from "vitest";
 
 describe("membershipsGateway", async () => {
-    const db = createDb()
-    await migrate(db)
+    const db = await createDb()
 
-    beforeEach(async () => {
-       await clear(db)
-    });
+    beforeEach(async () => await clear(db));
 
     test("create", async () => {
         const gateway = membershipsGateway(db)

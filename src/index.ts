@@ -48,10 +48,11 @@ export default {
             })
         );
 
+        const db = env.DB
         const service = accountsService(
-            accountsGateway(env.DB),
-            usersGateway(env.DB),
-            membershipsGateway(env.DB),
+            accountsGateway(db),
+            usersGateway(db),
+            membershipsGateway(db),
         )
 
         return new WorkerRouter(middleware)

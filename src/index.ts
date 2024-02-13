@@ -1,11 +1,11 @@
 import {basics, HTMLResponse, WorkerRouter} from "@worker-tools/shed";
-import {layoutHtml} from "./templates/layoutHtml";
 import {authenticated} from "./auth/authenticatedHandler";
 import {indexHtml} from "./templates/indexHtml";
 import {dashboardHtml} from "./templates/dashboardHtml";
 import {getAssetFromKV} from "@cloudflare/kv-asset-handler";
 // @ts-ignore
 import manifestJSON from "__STATIC_CONTENT_MANIFEST";
+import {authenticatedLayout, unauthenticatedLayout} from "./templates/layoutHtml";
 
 export interface Env {
     __STATIC_CONTENT: KVNamespace,
@@ -32,7 +32,7 @@ export default {
         }
 
         return new WorkerRouter(basics())
-            .get('/', () => new HTMLResponse(layoutHtml(indexHtml)))
-            .get('/dashboard', authenticated((_, {email}) => new HTMLResponse(layoutHtml(dashboardHtml(email))))).fetch(request);
+            .get('/', () => new HTMLResponse(unauthenticatedLayout(indexHtml)))
+            .get('/dashboard', authenticated((_, {email}) => new HTMLResponse(authenticatedLayout(email, dashboardHtml(email))))).fetch(request);
     },
 };

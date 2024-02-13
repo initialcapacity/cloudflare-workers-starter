@@ -1,7 +1,7 @@
 import {html} from "@worker-tools/shed";
 import {HTML} from "@worker-tools/html";
 
-export const layoutHtml = (content: HTML): HTML => html`
+const layout = (content: HTML): HTML => html`
     <!doctype html>
     <html lang="en">
     <head>
@@ -11,10 +11,74 @@ export const layoutHtml = (content: HTML): HTML => html`
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Workers Starter</title>
         <link rel="stylesheet" href="/static/css/reset.css">
-        <link rel="stylesheet" href="/static/css/style.css">
+        <link rel="stylesheet" href="/static/css/theme.css">
+        <link rel="stylesheet" href="/static/css/typography.css">
+        <link rel="stylesheet" href="/static/css/layout.css">
+        <link rel="stylesheet" href="/static/css/buttons.css">
+        <link rel="stylesheet" href="/static/css/dropdowns.css">
     </head>
     <body>
     ${content}
+    <footer>
+        <span>
+            <script>document.write("&copy;" + new Date().getFullYear());</script>
+            Initial Capacity, Inc.
+        </span>
+    </footer>
     </body>
     </html>
 `
+
+const title: HTML = html`
+    <ul>
+        <li class="heading">
+            <svg class="logo">
+                <use xlink:href="/static/images/icons.svg#logo"></use>
+            </svg>
+        </li>
+        <li class="heading">
+            <h1>Workers Starter</h1>
+        </li>
+    </ul>
+`
+
+export const unauthenticatedLayout = (content: HTML): HTML => layout(html`
+    <header>
+        ${title}
+    </header>
+    <main>
+        ${content}
+    </main>
+`)
+
+export const authenticatedLayout = (email: string, content: HTML): HTML => layout(html`
+    <header>
+        ${title}
+        <ul>
+            <li class="dropdown">
+                <a href="#" class="button" aria-haspopup="true">
+                    <svg>
+                        <use xlink:href="/static/images/icons.svg#account"></use>
+                    </svg>
+
+                   ${email}
+                </a>
+
+                <ul class="menu" aria-label="submenu">
+                    <li><a href="#">Another account</a></li>
+                    <li><a href="#">Some other account</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="/log-out" aria-label="log out">
+                    <svg>
+                        <use xlink:href="/static/images/icons.svg#log-out"></use>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </header>
+    <main>
+        ${content}
+    </main>
+`)

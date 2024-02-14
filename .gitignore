@@ -5,4 +5,4 @@ dist-app
 dist-auth
 dist-worker
 .dev.vars
-test/support/test.sqlite
+test/support/dbs/*.test.sqlite

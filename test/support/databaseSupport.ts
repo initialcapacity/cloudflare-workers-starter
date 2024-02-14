@@ -11,9 +11,10 @@ const migrate = async (db: D1Database): Promise<void> => {
     }
 }
 
-export const createDb = async (): Promise<D1DatabaseType> => {
-    fs.rmSync('test/support/test.sqlite', {force: true})
-    const sqlite = new Database('test/support/test.sqlite');
+export const createDb = async (name: string): Promise<D1DatabaseType> => {
+    const dbFile = `test/support/dbs/${name}.test.sqlite`;
+    fs.rmSync(dbFile, {force: true})
+    const sqlite = new Database(dbFile);
     const api = new D1DatabaseAPI(sqlite)
     const db = new D1Database(api);
     await migrate(db);

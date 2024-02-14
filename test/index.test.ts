@@ -5,7 +5,16 @@ describe('Starter app', () => {
 
     beforeAll(async () => {
         worker = await unstable_dev('src/index.ts', {
-            experimental: {disableExperimentalWarning: true}
+            experimental: {
+                disableExperimentalWarning: true,
+                d1Databases: [{
+                    binding: "DB",
+                    database_name: "starter-db",
+                    database_id: "311b464e-ef41-4aed-98b3-75bf4f9f3efe",
+                    preview_database_id: "starter-test-db"
+                }]
+            },
+
         });
     });
 
@@ -13,7 +22,7 @@ describe('Starter app', () => {
         await worker.stop();
     });
 
-    test.skip('loads the index', async () => {
+    test('loads the index', async () => {
         const response = await worker.fetch('/');
 
         expect(response.status).toEqual(200)
@@ -22,7 +31,7 @@ describe('Starter app', () => {
         expect(text).toContain('log in');
     });
 
-    test.skip('loads the dashboard', async () => {
+    test('loads the dashboard', async () => {
         const response = await worker.fetch('/dashboard', {
             headers: {
                 'starter-proxied': 'true',
@@ -36,7 +45,7 @@ describe('Starter app', () => {
         expect(text).toContain('Welcome, test@example.com!');
     });
 
-    test.skip('blocks requests to the dashboard without a proxied header', async () => {
+    test('blocks requests to the dashboard without a proxied header', async () => {
         const response = await worker.fetch('/dashboard');
 
         expect(response.status).toEqual(403)

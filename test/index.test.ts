@@ -1,12 +1,14 @@
 import {unstable_dev, UnstableDevWorker} from 'wrangler';
 
-// @vitest-environment node
 describe('Starter app', () => {
     let worker: UnstableDevWorker;
 
     beforeAll(async () => {
         worker = await unstable_dev('src/index.ts', {
             experimental: {disableExperimentalWarning: true},
+            vars: {
+                SECRET: 'test-secret'
+            }
         });
     });
 

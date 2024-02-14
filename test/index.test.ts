@@ -1,5 +1,6 @@
 import {unstable_dev, UnstableDevWorker} from 'wrangler';
 
+// @vitest-environment node
 describe('Starter app', () => {
     let worker: UnstableDevWorker;
 
@@ -13,7 +14,7 @@ describe('Starter app', () => {
         await worker.stop();
     });
 
-    test.skip('loads the index', async () => {
+    test('loads the index', async () => {
         const response = await worker.fetch('/');
 
         expect(response.status).toEqual(200)
@@ -22,7 +23,7 @@ describe('Starter app', () => {
         expect(text).toContain('log in');
     });
 
-    test.skip('loads the dashboard', async () => {
+    test('loads the dashboard', async () => {
         const response = await worker.fetch('/dashboard', {
             headers: {
                 'starter-proxied': 'true',
@@ -36,7 +37,7 @@ describe('Starter app', () => {
         expect(text).toContain('Welcome, test@example.com!');
     });
 
-    test.skip('blocks requests to the dashboard without a proxied header', async () => {
+    test('blocks requests to the dashboard without a proxied header', async () => {
         const response = await worker.fetch('/dashboard');
 
         expect(response.status).toEqual(403)

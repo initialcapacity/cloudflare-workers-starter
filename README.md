@@ -3,12 +3,7 @@
 A starter app to deploy to [Cloudflare Workers](https://developers.cloudflare.com/workers/).
 See it in action at [starterapp.work](https://starterapp.work).
 
-## Get started
-
-1.  Run tests with NPM.
-    ```shell
-    npm test
-    ```
+## Run tests
 
 1.  Create a `.dev.vars` file from the example.
     ```shell
@@ -19,8 +14,15 @@ See it in action at [starterapp.work](https://starterapp.work).
 
 1.  Migrate your local database.
     ```shell
-    wrangler d1 migrations apply starter-db --local
+    npm run migrations:apply
     ```
+
+1.  Run tests with NPM.
+    ```shell
+    npm test
+    ```
+
+## Run the apps
 
 1.  Run the scheduled worker.
     ```shell
@@ -44,8 +46,8 @@ See it in action at [starterapp.work](https://starterapp.work).
 
 ## Migrations
 
-Run a migration with
+Create a migration with
 
 ```shell
-wrangler d1 migrations create $MIGRATION_NAME
+npm run migrations:create -- $MIGRATION_NAME
 ```

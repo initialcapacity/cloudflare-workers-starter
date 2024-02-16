@@ -10,7 +10,8 @@
         "worker:start": "wrangler dev --config wrangler-worker.toml --test-scheduled",
         "worker:trigger": "curl \"http://localhost:8789/__scheduled?cron=*/10+*+*+*+*\"",
         "auth:start": "wrangler dev --config wrangler-auth.toml",
-        "migrate": "wrangler d1 migrations apply starter-db --local"
+        "migrations:apply": "wrangler d1 migrations apply starter-db --local",
+        "migrations:create": "wrangler d1 migrations create starter-db"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.20240129.0",

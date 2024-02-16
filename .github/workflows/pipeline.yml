@@ -20,7 +20,7 @@ jobs:
       - name: 'Install dependencies'
         run: npm ci
       - name: 'Migrate'
-        run: npm run migrate
+        run: npm run migrations:apply
       - name: 'Run tests'
         run: npm test
       - name: 'Build app'

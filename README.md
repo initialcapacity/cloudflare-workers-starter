@@ -1,7 +1,21 @@
 # Cloudflare Workers Starter
 
-A starter app to deploy to [Cloudflare Workers](https://developers.cloudflare.com/workers/).
-See it in action at [starterapp.work](https://starterapp.work).
+A starter app that deploys a web application, authentication proxy, and background worker to [Cloudflare Workers](https://developers.cloudflare.com/workers/).
+
+- Authentication
+- Web app
+- Background worker
+
+## Technology stack
+
+This codebase is written Typescript and runs on the [Cloudflare Workers runtime](https://developers.cloudflare.com/workers/runtime-apis/web-standards/),
+an [open source runtime](https://github.com/cloudflare/workerd) similar to the [Web Workers API](https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker)
+which differs from what runs on Node or your browser.
+It uses components from [Worker Tools](https://workers.tools/) for routing and templating.
+The codebase is tested with Vitest and builds and deploys with [Wrangler](https://developers.cloudflare.com/workers/wrangler/).
+A [GitHub action](https://github.com/initialcapacity/workers-starter) builds a zip atrifact and deploys it to Cloudflare
+Workers.
+See the starter in action at [starterapp.work](https://starterapp.work) (login required).
 
 ## Run tests
 

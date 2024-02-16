@@ -1,6 +1,7 @@
 # Cloudflare Workers Starter
 
-https://starterapp.work
+A starter app to deploy to [Cloudflare Workers](https://developers.cloudflare.com/workers/).
+See it in action at [starterapp.work](https://starterapp.work).
 
 ## Get started
 

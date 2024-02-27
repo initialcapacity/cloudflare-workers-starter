@@ -6,7 +6,7 @@ import {getAssetFromKV} from "@cloudflare/kv-asset-handler";
 // @ts-ignore
 import manifestJSON from "__STATIC_CONTENT_MANIFEST";
 import {authenticatedLayout, unauthenticatedLayout} from "./templates/layoutHtml";
-import {emptySession, Session} from "./auth/session";
+import {emptySession, Session} from "./auth/oldSession";
 import {accountsService} from "./accounts/accountsService";
 import {usersGateway} from "./accounts/usersGateway";
 import {accountsGateway} from "./accounts/accountsGateway";

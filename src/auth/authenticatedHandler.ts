@@ -1,7 +1,7 @@
-import {Awaitable, Handler, RouteContext} from "@worker-tools/shed";
+import {Handler, RouteContext} from "@worker-tools/shed";
 import {AccountsService} from "../accounts/accountsService";
 import {CookieSessionContext} from "@worker-tools/middleware/types/session";
-import {isSet, Session, set} from "./session";
+import {isSet, Session, set} from "./oldSession";
 
 type UserContext = {
     email: string

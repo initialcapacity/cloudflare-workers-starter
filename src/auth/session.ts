@@ -1,26 +1,25 @@
-import {UserAccount} from "../accounts/accountsService";
+import {Context} from "hono";
+import {getSignedCookie, setSignedCookie} from "hono/cookie";
 
-type UserSession = { userId: number, email: string, accountId: number, accountName: string };
-type EmptySession = { userId: null, email: null, accountId: null, accountName: null };
-
-export type Session = UserSession | EmptySession
-
-export const emptySession: Session = {
-    userId: null,
-    email: null,
-    accountId: null,
-    accountName: null,
+export type Session<T> = {
+    get: () => Promise<T>
+    set: (data: T) => Promise<void>
 }
 
-export const isSet = (session: Session): boolean =>
-    session.userId !== null &&
-    session.email !== null &&
-    session.accountId !== null &&
-    session.accountName !== null
+export const session = <T, C extends Context>(cookieName: string, secret: string, c: C, defaultSession: T) => {
+    return {
+        get: async (): Promise<T> => {
+            const cookie = await getSignedCookie(c, secret, cookieName)
+            if (cookie === false || cookie === undefined) {
+                return defaultSession;
+            }
 
-export const set = (session: Session, userAccount: UserAccount) => {
-    session.userId = userAccount.id;
-    session.email = userAccount.email;
-    session.accountId = userAccount.accountId;
-    session.accountName = userAccount.accountName;
+            try {
+                return JSON.parse(cookie)
+            } catch {
+                return defaultSession
+            }
+        },
+        set: (data: T): Promise<void> => setSignedCookie(c, cookieName, JSON.stringify(data), secret)
+    }
 }

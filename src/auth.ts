@@ -2,6 +2,7 @@ import {OAuthClient, oauthClient} from './auth/oauthClient';
 import {isAuthorized} from './auth/authorization';
 import {Hono} from "hono";
 import {deleteCookie, getSignedCookie, setSignedCookie} from "hono/cookie";
+import {session, Session} from "./auth/session";
 
 export type Bindings = {
     APP: Fetcher,
@@ -12,23 +13,32 @@ export type Bindings = {
     AUTHORIZED_DOMAIN: string,
 }
 
+type EmailSession = {
+    email: string | null
+}
+
 export type Variables = {
     oauthClient: OAuthClient
+    session: Session<EmailSession>
 }
 
 const app = new Hono<{ Bindings: Bindings, Variables: Variables }>();
 
 app.use(async (c, next) => {
-    const client = oauthClient({
+    c.set('oauthClient', oauthClient({
         clientId: c.env.CLIENT_ID,
         clientSecret: c.env.CLIENT_SECRET,
         redirectUrl: `${c.env.BASE_URL}/callback`,
         authUrl: `https://accounts.google.com/o/oauth2/auth`,
         tokenUrl: `https://oauth2.googleapis.com/token`,
         userUrl: 'https://openidconnect.googleapis.com/v1/userinfo',
-    });
+    }))
 
-    c.set('oauthClient', client)
+    await next()
+})
+
+app.use(async (c, next) => {
+    c.set('session', session<EmailSession, typeof c>('starter-email', c.env.SECRET, c, {email: null}))
 
     await next()
 })
@@ -40,7 +50,7 @@ app.get('/login', async c => {
     return c.redirect(authUrl);
 })
 
-app.get('callback', async c => {
+app.get('/callback', async c => {
     const code = c.req.query('code') ?? '';
     const state = c.req.query('state') ?? '';
     const savedState = (await getSignedCookie(c, c.env.SECRET, 'starter-state')) || ''
@@ -65,12 +75,12 @@ app.get('callback', async c => {
         return c.text(`User ${email} not authorized`, {status: 403});
     }
 
-    await setSignedCookie(c, 'starter-email', email, c.env.SECRET)
+    await c.get('session').set({email})
     return c.redirect('/');
 })
 
 app.get('/', async c => {
-    const email = (await getSignedCookie(c, c.env.SECRET, 'starter-email')) || null
+    const {email} = await c.get('session').get()
     return email ? c.redirect('/dashboard') : c.env.APP.fetch(c.req.raw)
 })
 
@@ -82,7 +92,7 @@ app.get('/log-out', async c => {
 })
 
 app.all('/*', async c => {
-    const email = (await getSignedCookie(c, c.env.SECRET, 'starter-email')) || null
+    const {email} = await c.get('session').get()
     if (email === null) {
         return c.redirect('/login');
     }

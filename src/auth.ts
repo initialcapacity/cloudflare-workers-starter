@@ -1,8 +1,9 @@
-import {basics, combine, cookieSession, forbidden, found, signedCookies, WorkerRouter} from '@worker-tools/shed';
-import {oauthClient} from './auth/oauthClient';
+import {OAuthClient, oauthClient} from './auth/oauthClient';
 import {isAuthorized} from './auth/authorization';
+import {Hono} from "hono";
+import {deleteCookie, getSignedCookie, setSignedCookie} from "hono/cookie";
 
-export interface Env {
+export type Bindings = {
     APP: Fetcher,
     SECRET: string,
     CLIENT_ID: string,
@@ -11,83 +12,85 @@ export interface Env {
     AUTHORIZED_DOMAIN: string,
 }
 
-type Session = {
-    email: string | null
+export type Variables = {
+    oauthClient: OAuthClient
 }
 
-export default {
-    fetch: async (request: Request, env: Env, ctx: ExecutionContext) => {
-        const middleware = combine(
-            basics(),
-            signedCookies({secret: env.SECRET}),
-            cookieSession<Session>({
-                cookieName: 'starter-session',
-                expirationTtl: 60 * 60 * 24 * 7,
-                defaultSession: {email: null}
-            })
-        );
+const app = new Hono<{ Bindings: Bindings, Variables: Variables }>();
 
-        const client = oauthClient({
-            clientId: env.CLIENT_ID,
-            clientSecret: env.CLIENT_SECRET,
-            redirectUrl: `${env.BASE_URL}/callback`,
-            authUrl: `https://accounts.google.com/o/oauth2/auth`,
-            tokenUrl: `https://oauth2.googleapis.com/token`,
-            userUrl: 'https://openidconnect.googleapis.com/v1/userinfo',
-        });
-        const authorized = isAuthorized(env.AUTHORIZED_DOMAIN)
+app.use(async (c, next) => {
+    const client = oauthClient({
+        clientId: c.env.CLIENT_ID,
+        clientSecret: c.env.CLIENT_SECRET,
+        redirectUrl: `${c.env.BASE_URL}/callback`,
+        authUrl: `https://accounts.google.com/o/oauth2/auth`,
+        tokenUrl: `https://oauth2.googleapis.com/token`,
+        userUrl: 'https://openidconnect.googleapis.com/v1/userinfo',
+    });
 
-        const router = new WorkerRouter(middleware)
-            .get('/login', async (_, {cookieStore}) => {
-                const state = crypto.randomUUID();
-                const authUrl = client.authUrl(state);
-                await cookieStore.set('starter-state', state);
-                return found(authUrl);
-            })
-            .get('/callback', async (_, {searchParams, session, cookieStore}) => {
-                const code = searchParams.get('code') ?? '';
-                const state = searchParams.get('state') ?? '';
-                const savedState = (await cookieStore.get('starter-state'))?.value ?? '';
-                await cookieStore.delete('starter-state');
+    c.set('oauthClient', client)
 
-                const tokenResult = await client.fetchToken(code, state, savedState);
-                if (!tokenResult.success) {
-                    console.log(`failed fetching token: ${tokenResult.error}`);
-                    return found('/');
-                }
+    await next()
+})
 
-                const emailResult = await client.fetchEmail(tokenResult.token);
-                if (!emailResult.success) {
-                    console.log(`failed fetching email: ${emailResult.error}`);
-                    return found('/');
-                }
+app.get('/login', async c => {
+    const state = crypto.randomUUID();
+    const authUrl = c.get('oauthClient').authUrl(state);
+    await setSignedCookie(c, 'starter-state', state, c.env.SECRET)
+    return c.redirect(authUrl);
+})
 
-                const email = emailResult.email;
-                if (!authorized(email)) {
-                    return forbidden(`User ${email} not authorized`);
-                }
+app.get('callback', async c => {
+    const code = c.req.query('code') ?? '';
+    const state = c.req.query('state') ?? '';
+    const savedState = (await getSignedCookie(c, c.env.SECRET, 'starter-state')) || ''
+    deleteCookie(c, 'starter-state')
+    const client = c.get('oauthClient');
+    const authorized = isAuthorized(c.env.AUTHORIZED_DOMAIN)
 
-                session.email = email;
-                return found('/');
-            })
-            .get('/', (req, {session}) =>
-                session.email ? found('/dashboard') : env.APP.fetch(req))
-            .get('/static/*', req => env.APP.fetch(req))
-            .get('/log-out', (_, {session}) => {
-                session.email = null;
-                return found('/');
-            })
-            .all('/*', (_, {session}) => {
-                if (session.email === null) {
-                    return found('/login');
-                }
-
-                const augmentedRequest = new Request(request);
-                augmentedRequest.headers.append('starter-proxied', 'true');
-                augmentedRequest.headers.append('starter-user', session.email);
-                return env.APP.fetch(augmentedRequest);
-            });
-
-        return router.fetch(request);
+    const tokenResult = await client.fetchToken(code, state, savedState);
+    if (!tokenResult.success) {
+        console.log(`failed fetching token: ${tokenResult.error}`);
+        return c.redirect('/');
     }
-};
+
+    const emailResult = await client.fetchEmail(tokenResult.token);
+    if (!emailResult.success) {
+        console.log(`failed fetching email: ${emailResult.error}`);
+        return c.redirect('/');
+    }
+
+    const email = emailResult.email;
+    if (!authorized(email)) {
+        return c.text(`User ${email} not authorized`, {status: 403});
+    }
+
+    await setSignedCookie(c, 'starter-email', email, c.env.SECRET)
+    return c.redirect('/');
+})
+
+app.get('/', async c => {
+    const email = (await getSignedCookie(c, c.env.SECRET, 'starter-email')) || null
+    return email ? c.redirect('/dashboard') : c.env.APP.fetch(c.req.raw)
+})
+
+app.get('/static/*', async c => c.env.APP.fetch(c.req.raw))
+
+app.get('/log-out', async c => {
+    deleteCookie(c, 'starter-email')
+    return c.redirect('/')
+})
+
+app.all('/*', async c => {
+    const email = (await getSignedCookie(c, c.env.SECRET, 'starter-email')) || null
+    if (email === null) {
+        return c.redirect('/login');
+    }
+
+    const augmentedRequest = new Request(c.req.raw);
+    augmentedRequest.headers.append('starter-proxied', 'true');
+    augmentedRequest.headers.append('starter-user', email);
+    return c.env.APP.fetch(augmentedRequest);
+})
+
+export default app;

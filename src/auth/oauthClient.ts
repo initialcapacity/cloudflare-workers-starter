@@ -8,7 +8,7 @@ type EmailResult =
     | { success: true, email: string }
     | OAuthError
 
-type OAuthClient = {
+export type OAuthClient = {
     authUrl: (state: string) => string
     fetchToken: (code: string, state: string, savedState: string) => Promise<TokenResult>
     fetchEmail: (token: string) => Promise<EmailResult>

@@ -3,7 +3,6 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "dev": "wrangler dev",
         "start": "wrangler dev",
         "typecheck": "tsc",
         "test": "npm run typecheck && vitest run",

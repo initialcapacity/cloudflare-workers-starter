@@ -14,7 +14,13 @@ type CustomEnv = {
 
 const factory = createFactory<Env & CustomEnv>()
 
-export const authenticated = (handler: (c: Context<Env & CustomEnv>, email: string, accountName: string) => Response | Promise<Response>) =>
+
+type UserContext = {
+    email: string
+    accountName: string,
+}
+
+export const authenticated = (handler: (c: Context<Env & CustomEnv>, userContext: UserContext) => Response | Promise<Response>) =>
     factory.createHandlers(async (c) => {
         const proxied = c.req.header('starter-proxied') === 'true';
         const email = c.req.header('starter-user')
@@ -40,8 +46,8 @@ export const authenticated = (handler: (c: Context<Env & CustomEnv>, email: stri
                 accountId: userAccount.accountId, accountName: userAccount.accountName,
             })
 
-            return handler(c, userAccount.email, userAccount.accountName)
+            return handler(c, {email: userAccount.email, accountName: userAccount.accountName})
         }
 
-        return handler(c, userSession.email, userSession.accountName)
+        return handler(c, {email: userSession.email, accountName: userSession.accountName})
     })[0]

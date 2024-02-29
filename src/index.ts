@@ -31,8 +31,8 @@ app.use(async (c, next) => {
 
 app.get('/static/*', serveStatic({root: './', manifest}))
 app.get('/', (c) => c.html(unauthenticatedLayout(indexHtml)))
-app.get('/dashboard', authenticated((c, email, accountName) =>
-    c.html(authenticatedLayout({email, accountName}, dashboardHtml(email))))
+app.get('/dashboard', authenticated((c, userContext) =>
+    c.html(authenticatedLayout(userContext, dashboardHtml(userContext.email))))
 );
 
 export default app;

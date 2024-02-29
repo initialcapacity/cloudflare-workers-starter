@@ -1,7 +1,6 @@
-import {HTML} from "@worker-tools/html";
-import {html} from "@worker-tools/shed";
+import {html} from "hono/html";
 
-export const indexHtml: HTML = html`
+export const indexHtml = html`
     <section>
         <h1>Welcome</h1>
         <p>

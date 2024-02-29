@@ -1,7 +1,9 @@
-import {html} from "@worker-tools/shed";
-import {HTML} from "@worker-tools/html";
+import {html} from "hono/html";
+import {HtmlEscapedString} from "hono/utils/html";
 
-const layout = (content: HTML): HTML => html`
+type TemplateString = HtmlEscapedString | Promise<HtmlEscapedString>
+
+const layout = (content: TemplateString): TemplateString => html`
     <!doctype html>
     <html lang="en">
     <head>
@@ -32,7 +34,7 @@ const layout = (content: HTML): HTML => html`
     </html>
 `
 
-const title: HTML = html`
+const title: TemplateString = html`
     <ul>
         <li>
             <svg class="logo">
@@ -45,7 +47,7 @@ const title: HTML = html`
     </ul>
 `
 
-export const unauthenticatedLayout = (content: HTML): HTML => layout(html`
+export const unauthenticatedLayout = (content: TemplateString) => layout(html`
     <header>
         ${title}
     </header>
@@ -59,7 +61,7 @@ type UserContext = {
     accountName: string,
 }
 
-export const authenticatedLayout = (user: UserContext, content: HTML): HTML => layout(html`
+export const authenticatedLayout = (user: UserContext, content: TemplateString): TemplateString => layout(html`
     <header>
         ${title}
         <ul>

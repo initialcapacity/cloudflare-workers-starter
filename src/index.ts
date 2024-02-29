@@ -1,68 +1,38 @@
-import {basics, combine, cookieSession, HTMLResponse, signedCookies, WorkerRouter} from "@worker-tools/shed";
-import {authenticated} from "./auth/authenticatedHandler";
+// @ts-ignore
+import manifest from "__STATIC_CONTENT_MANIFEST";
 import {indexHtml} from "./templates/indexHtml";
 import {dashboardHtml} from "./templates/dashboardHtml";
-import {getAssetFromKV} from "@cloudflare/kv-asset-handler";
-// @ts-ignore
-import manifestJSON from "__STATIC_CONTENT_MANIFEST";
 import {authenticatedLayout, unauthenticatedLayout} from "./templates/layoutHtml";
-import {emptySession, Session} from "./auth/oldSession";
-import {accountsService} from "./accounts/accountsService";
-import {usersGateway} from "./accounts/usersGateway";
-import {accountsGateway} from "./accounts/accountsGateway";
-import {membershipsGateway} from "./accounts/membershipsGateway";
 
-export interface Env {
+import {Hono} from "hono";
+import {serveStatic} from "hono/cloudflare-workers";
+import {session, Session} from "./auth/session";
+import {UserSession} from "./userSession";
+import {authenticated} from "./auth/authenticatedHandler";
+
+type Bindings = {
     __STATIC_CONTENT: KVNamespace,
     __STATIC_CONTENT_MANIFEST: string,
     DB: D1Database,
     SECRET: string,
 }
 
-const assetManifest = JSON.parse(manifestJSON);
+type Variables = {
+    session: Session<UserSession>
+}
 
-export default {
-    fetch: async (request: Request, env: Env, ctx: ExecutionContext): Promise<Response> => {
-        try {
-            return await getAssetFromKV(
-                {
-                    request,
-                    waitUntil: ctx.waitUntil.bind(ctx),
-                },
-                {
-                    ASSET_NAMESPACE: env.__STATIC_CONTENT,
-                    ASSET_MANIFEST: assetManifest,
-                }
-            );
-        } catch (e) {
+const app = new Hono<{ Bindings: Bindings, Variables: Variables }>();
+app.use(async (c, next) => {
+    c.set('session', session<UserSession, typeof c>('starter-session', c.env.SECRET, c,
+        {userId: null, email: null, accountId: null, accountName: null}
+    ))
+    await next()
+})
 
-        }
+app.get('/static/*', serveStatic({root: './', manifest}))
+app.get('/', (c) => c.html(unauthenticatedLayout(indexHtml)))
+app.get('/dashboard', authenticated((c, email, accountName) =>
+    c.html(authenticatedLayout({email, accountName}, dashboardHtml(email))))
+);
 
-        const middleware = combine(
-            basics(),
-            signedCookies({secret: env.SECRET}),
-            cookieSession<Session>({
-                cookieName: 'starter-session',
-                expirationTtl: 60 * 60 * 24 * 7,
-                defaultSession: emptySession
-            })
-        );
-
-        const db = env.DB
-        const service = accountsService(
-            accountsGateway(db),
-            usersGateway(db),
-            membershipsGateway(db),
-        )
-
-        return new WorkerRouter(middleware)
-            .get('/', () => new HTMLResponse(unauthenticatedLayout(indexHtml)))
-            .get('/dashboard', authenticated(service, (_, {
-                email,
-                accountName
-            }) => new HTMLResponse(authenticatedLayout({
-                email,
-                accountName
-            }, dashboardHtml(email))))).fetch(request);
-    },
-};
+export default app;

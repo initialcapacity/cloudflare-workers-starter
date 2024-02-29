@@ -11,9 +11,9 @@ A starter app that deploys a web application, authentication proxy, and backgrou
 This codebase is written Typescript and runs on the [Cloudflare Workers runtime](https://developers.cloudflare.com/workers/runtime-apis/web-standards/),
 an [open source runtime](https://github.com/cloudflare/workerd) similar to the [Web Workers API](https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker)
 which differs from what runs on Node or your browser.
-It uses components from [Worker Tools](https://workers.tools/) for routing and templating.
-The codebase is tested with Vitest and builds and deploys with [Wrangler](https://developers.cloudflare.com/workers/wrangler/).
-A [GitHub action](https://github.com/initialcapacity/workers-starter) builds a zip atrifact and deploys it to Cloudflare
+It uses a lightweight framework called [Hono](https://hono.dev/) for routing and templating.
+The codebase is tested with [Vitest](https://vitest.dev/) and builds and deploys with [Wrangler](https://developers.cloudflare.com/workers/wrangler/).
+A [GitHub action](.github/workflows/pipeline.yml) builds a zip artifact and deploys it to Cloudflare
 Workers.
 See the starter in action at [starterapp.work](https://starterapp.work) (login required).
 

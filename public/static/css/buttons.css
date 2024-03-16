@@ -2,7 +2,6 @@ button, .button {
     --background: var(--button-background-color);
     --text-color: var(--button-text-color);
     --border: var(--button-background-color);
-    --loader: var(--button-loader-primary);
 
     display: flex;
     align-items: center;
@@ -33,25 +32,4 @@ button svg, .button svg {
 a.button {
     color: var(--text-color);
     text-decoration: none;
-}
-
-button.loading, .button.loading {
-    padding-left: 3rem;
-    background-image: var(--loader);
-    background-repeat: no-repeat;
-    background-position-x: .75rem;
-    background-position-y: center;
-    background-size: 1.5rem 1.5rem;
-}
-
-button.secondary, .button.secondary {
-    --background: var(--background-color);
-    --border: var(--button-border-color);
-    --text-color: var(--button-border-color);
-    --loader: var(--button-loader-secondary);
-}
-
-button.alert, .button.alert {
-    --background: var(--button-alert-color);
-    --border: var(--button-alert-color);
 }

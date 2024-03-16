@@ -29,17 +29,14 @@
     --button-background-color: var(--primary);
     --button-border-color: var(--primary);
     --button-text-color: var(--white);
-    --button-alert-color: var(--alert);
-    --button-loader-primary: url("../images/loader-white.svg");
-    --button-loader-secondary: url("../images/loader-primary.svg");
 
     --header-height: 5rem;
     --body-padding: 2rem;
     --footer-height: 6rem;
     --nav-width: 16rem;
-    --inverted-ic-logo: url("/static/images/ic-logo-white.svg");
-    --expand-image: url("/static/images/expand-black.svg");
-    --white-expand-image: url("/static/images/expand-white.svg");
+    --inverted-ic-logo: url("../images/ic-logo-white.svg");
+    --expand-image: url("../images/expand-black.svg");
+    --white-expand-image: url("../images/expand-white.svg");
 }
 
 html {

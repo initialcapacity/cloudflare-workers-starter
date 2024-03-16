@@ -7,6 +7,7 @@ export default defineWorkersConfig(async () => {
 
     return {
         test: {
+            reporters: ["dot"],
             setupFiles: ["test/apply-migrations.ts"],
             poolOptions: {
                 singleWorker: true,

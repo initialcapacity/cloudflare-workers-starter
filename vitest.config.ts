@@ -13,7 +13,10 @@ export default defineWorkersConfig(async () => {
                 workers: {
                     wrangler: {configPath: "./wrangler.toml"},
                     miniflare: {
-                        bindings: {TEST_MIGRATIONS: migrations},
+                        bindings: {
+                            TEST_MIGRATIONS: migrations,
+                            SECRET: "super-secret"
+                        },
                     },
                 },
             },

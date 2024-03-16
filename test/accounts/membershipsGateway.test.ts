@@ -1,9 +1,10 @@
+import {env} from "cloudflare:test";
 import {membershipsGateway} from "../../src/accounts/membershipsGateway";
-import {clear, createDb} from "../support/databaseSupport";
-import {beforeEach} from "vitest";
+import {clear} from "../support/databaseSupport";
+import {describe, test, expect, beforeEach} from "vitest";
 
 describe("membershipsGateway", async () => {
-    const db = await createDb('membershipsGateway')
+    const db = env.DB
 
     beforeEach(async () => await clear(db));
 

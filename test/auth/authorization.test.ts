@@ -1,5 +1,5 @@
 import { isAuthorized } from '../../src/auth/authorization';
-import { expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 describe('authorization', () => {
     test('isAuthorized', () => {

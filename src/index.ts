@@ -10,18 +10,11 @@ import {session, Session} from "./auth/session";
 import {UserSession} from "./userSession";
 import {authenticated} from "./auth/authenticatedHandler";
 
-type Bindings = {
-    __STATIC_CONTENT: KVNamespace,
-    __STATIC_CONTENT_MANIFEST: string,
-    DB: D1Database,
-    SECRET: string,
-}
-
 type Variables = {
     session: Session<UserSession>
 }
 
-const app = new Hono<{ Bindings: Bindings, Variables: Variables }>();
+const app = new Hono<{ Bindings: Env, Variables: Variables }>();
 app.use(async (c, next) => {
     c.set('session', session<UserSession, typeof c>('starter-session', c.env.SECRET, c,
         {userId: null, email: null, accountId: null, accountName: null}
@@ -35,4 +28,4 @@ app.get('/dashboard', authenticated((c, userContext) =>
     c.html(authenticatedLayout(userContext, dashboardHtml(userContext.email))))
 );
 
-export default app;
+export default app satisfies ExportedHandler<Env>;

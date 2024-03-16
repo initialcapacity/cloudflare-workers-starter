@@ -1,12 +1,15 @@
+import {env} from "cloudflare:test";
 import {usersGateway} from "../../src/accounts/usersGateway";
-import {clear, createDb} from "../support/databaseSupport";
-import {beforeEach, expect} from "vitest";
+import {clear} from "../support/databaseSupport";
+import {describe, test, beforeEach, expect} from "vitest";
 
 describe("usersGateway", async () => {
-    const db = await createDb('usersGateway')
+    const db = env.DB
     const gateway = usersGateway(db)
 
-    beforeEach(async () => await clear(db));
+    beforeEach(async () => {
+        await clear(db);
+    });
 
     test("create", async () => {
         const result = await gateway.create("test@example.com")

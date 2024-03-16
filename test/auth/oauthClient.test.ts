@@ -1,5 +1,6 @@
+import { fetchMock } from "cloudflare:test";
 import { oauthClient } from '../../src/auth/oauthClient';
-import { expect } from 'vitest';
+import { describe, test, expect, beforeAll, afterEach } from 'vitest';
 
 describe('oauthClient', () => {
     const client = oauthClient({
@@ -10,6 +11,13 @@ describe('oauthClient', () => {
         redirectUrl: 'https://redirect.example.com',
         userUrl: 'https://user.example.com'
     });
+
+    beforeAll(() => {
+        fetchMock.activate();
+        fetchMock.disableNetConnect();
+    });
+
+    afterEach(() => fetchMock.assertNoPendingInterceptors());
 
     test('authUrl', () => {
         const authUrl = new URL(client.authUrl('some-state'));
@@ -25,8 +33,6 @@ describe('oauthClient', () => {
 
     describe('fetchToken', async () => {
         test('success', async () => {
-            const fetchMock = getMiniflareFetchMock();
-            fetchMock.disableNetConnect();
             fetchMock.get('https://token.example.com')
                 .intercept({ method: 'POST', path: '/' })
                 .reply(201, JSON.stringify({
@@ -39,9 +45,7 @@ describe('oauthClient', () => {
         });
 
         test('failure', async () => {
-            const fetchMock = getMiniflareFetchMock();
-            fetchMock.disableNetConnect();
-            const a = fetchMock.get('https://token.example.com')
+            fetchMock.get('https://token.example.com')
                 .intercept({ method: 'POST', path: '/' })
                 .reply(500, 'bad news');
 
@@ -64,8 +68,6 @@ describe('oauthClient', () => {
 
     describe('fetchEmail', async () => {
         test('success', async () => {
-            const fetchMock = getMiniflareFetchMock();
-            fetchMock.disableNetConnect();
             fetchMock.get('https://user.example.com')
                 .intercept({ method: 'GET', path: '/' })
                 .reply(200, JSON.stringify({ email: 'test@example.com' }));
@@ -76,8 +78,6 @@ describe('oauthClient', () => {
         });
 
         test('failure', async () => {
-            const fetchMock = getMiniflareFetchMock();
-            fetchMock.disableNetConnect();
             fetchMock.get('https://user.example.com')
                 .intercept({ method: 'GET', path: '/' })
                 .reply(500, 'bad news');

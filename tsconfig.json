@@ -5,12 +5,11 @@
             "es2021"
         ],
         "jsx": "react",
-        "module": "es2022",
-        "moduleResolution": "node",
+        "module": "esnext",
+        "moduleResolution": "bundler",
         "types": [
-            "vitest/globals",
-            "@cloudflare/workers-types/2023-07-01",
-            "vitest-environment-miniflare/globals"
+            "@cloudflare/workers-types/experimental",
+            "@cloudflare/vitest-pool-workers",
         ],
         "resolveJsonModule": true,
         "allowJs": true,

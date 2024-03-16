@@ -1,23 +1,9 @@
-import {unstable_dev, UnstableDevWorker} from 'wrangler';
+import { SELF as worker } from "cloudflare:test";
+import { describe, test, expect } from "vitest";
 
 describe('Starter app', () => {
-    let worker: UnstableDevWorker;
-
-    beforeAll(async () => {
-        worker = await unstable_dev('src/index.ts', {
-            experimental: {disableExperimentalWarning: true},
-            vars: {
-                SECRET: 'test-secret'
-            }
-        });
-    });
-
-    afterAll(async () => {
-        await worker.stop();
-    });
-
     test('loads the index', async () => {
-        const response = await worker.fetch('/');
+        const response = await worker.fetch('https://example.com/');
 
         expect(response.status).toEqual(200)
         const text = await response.text();
@@ -26,7 +12,7 @@ describe('Starter app', () => {
     });
 
     test('loads the dashboard', async () => {
-        const response = await worker.fetch('/dashboard', {
+        const response = await worker.fetch('https://example.com/dashboard', {
             headers: {
                 'starter-proxied': 'true',
                 'starter-user': 'test@example.com',
@@ -40,7 +26,7 @@ describe('Starter app', () => {
     });
 
     test('blocks requests to the dashboard without a proxied header', async () => {
-        const response = await worker.fetch('/dashboard');
+        const response = await worker.fetch('https://example.com/dashboard');
 
         expect(response.status).toEqual(403)
         const text = await response.text();

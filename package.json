@@ -13,17 +13,16 @@
         "migrations:create": "wrangler d1 migrations create starter-db"
     },
     "devDependencies": {
+        "@cloudflare/vitest-pool-workers": "0.1.2",
         "@cloudflare/workers-types": "^4.20240129.0",
-        "better-sqlite3": "^8.0.1",
         "typescript": "^5.3.3",
-        "vitest": "^1.2.2",
-        "vitest-environment-miniflare": "^2.14.2",
-        "wrangler": "3.30.1"
+        "vitest": "1.3.0",
+        "wrangler": "3.34.2"
     },
     "dependencies": {
         "hono": "^4.0.7"
     },
     "engines": {
-        "node": "21.6.2"
+        "node": "21.7.1"
     }
 }
